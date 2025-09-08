@@ -1,0 +1,19 @@
+{
+  "name": "orbjs_fetch",
+  "version": "1.0.0",
+  "description": "A Fetch API helper",
+  "files": [
+    "src"
+  ],
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sopheos/orbjs_fetch.git"
+  },
+  "author": "Lucas Schnoebelen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sopheos/orbjs_fetch/issues"
+  },
+  "homepage": "https://github.com/sopheos/orbjs_fetch#readme"
+}
