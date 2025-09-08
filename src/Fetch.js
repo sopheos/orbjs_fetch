@@ -1,3 +1,5 @@
+import HttpException from "./HttpException";
+
 /**
  * @typedef HttpResponse
  * @type {object}

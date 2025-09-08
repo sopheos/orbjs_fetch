@@ -1,3 +1,7 @@
+import { resolve } from "path";
+import Fetch from "./Fetch";
+import HttpException from "./HttpException";
+
 /**
  *
  * @callback handleErrors
@@ -47,6 +51,7 @@ export default class FetchQueue extends Fetch {
     delay: 0,
     exp: 0,
   };
+
   refreshStore = {
     token: null,
     delay: 0,
@@ -205,7 +210,7 @@ export default class FetchQueue extends Fetch {
     }
 
     // refresh valid ------------------------------------------------------------------------------
-    if (this.refreshStore.exp > Date.now() || this.refreshStore.forceRetry) {
+    if (this.refreshStore.exp > timestamp || this.refreshStore.forceRetry) {
       if (this.pending === FetchQueue.NONE) {
         this.refresh();
       }
