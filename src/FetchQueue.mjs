@@ -1,6 +1,5 @@
-import { resolve } from "path";
-import Fetch from "./Fetch";
-import HttpException from "./HttpException";
+import Fetch from "./Fetch.mjs";
+import HttpException from "./HttpException.mjs";
 
 /**
  *
@@ -36,7 +35,7 @@ import HttpException from "./HttpException";
  *
  */
 
-export default class FetchQueue extends Fetch {
+export class FetchQueue extends Fetch {
   static NONE = 0;
   static ASYNC = 1;
   static SYNC = 2;

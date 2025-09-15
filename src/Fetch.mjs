@@ -1,4 +1,4 @@
-import HttpException from "./HttpException";
+import HttpException from "./HttpException.mjs";
 
 /**
  * @typedef HttpResponse
@@ -19,7 +19,7 @@ import HttpException from "./HttpException";
  * @property {?Object.<string, any>} [json]
  */
 
-export default class Fetch {
+export class Fetch {
   options = {};
 
   /**

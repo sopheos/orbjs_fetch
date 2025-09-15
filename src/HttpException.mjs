@@ -1,4 +1,4 @@
-export default class HttpException {
+export class HttpException {
   constructor(res) {
     this.status = res.status;
     this.data = res.data;

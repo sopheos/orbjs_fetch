@@ -2,8 +2,11 @@
   "name": "@sopheos/orbjs_fetch",
   "version": "1.0.0",
   "description": "A Fetch API helper",
-  "main": "./index.js",
+  "exports": "./index.mjs",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sopheos/orbjs_fetch.git"
