@@ -1,4 +1,4 @@
-import HttpException from "./HttpException.mjs";
+import { HttpException } from "./HttpException.mjs";
 
 /**
  * @typedef HttpResponse
