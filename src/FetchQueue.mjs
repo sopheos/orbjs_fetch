@@ -1,5 +1,5 @@
-import Fetch from "./Fetch.mjs";
-import HttpException from "./HttpException.mjs";
+import { Fetch } from "./Fetch.mjs";
+import { HttpException } from "./HttpException.mjs";
 
 /**
  *
