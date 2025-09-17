@@ -5,6 +5,7 @@ import { HttpException } from "./HttpException.mjs";
  *
  * @callback handleErrors
  * @param {HttpException} error
+ * @param {{url: string, options: Options}} ctx
  *
  * @callback fetchToken
  * @returns {Promise<void>}
@@ -168,15 +169,19 @@ export class FetchQueue extends Fetch {
         }
       }
 
-      await this.handleErrors(e);
+      await this.handleErrors(e, {url, options});
 
       throw e;
     });
   }
 
-  async handleErrors(e) {
+  /**
+   * @param {HttpException} e
+   * @param {{url: string, options: Options}} ctx
+   */
+  async handleErrors(e, ctx) {
     if (this.config.handleErrors) {
-      await this.config.handleErrors(e);
+      await this.config.handleErrors(e, ctx);
     }
     throw e;
   }
@@ -186,7 +191,7 @@ export class FetchQueue extends Fetch {
   // ----------------------------------------------------------------------------------------------
 
   /**
-   * @returns {boolean} True if need to be queue
+   * @returns {Promise<boolean>} True if need to be queue
    */
   async isQueue() {
     if (this.pending === FetchQueue.SYNC) {

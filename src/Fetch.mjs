@@ -60,6 +60,7 @@ export class Fetch {
     const init = {
       method: config.method ?? "GET",
       credentials: config.credentials ?? "omit",
+      body: config.body,
       signal: config.signal ?? null,
       headers: new Headers(config.headers ?? {}),
     };
