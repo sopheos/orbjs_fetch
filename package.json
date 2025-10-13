@@ -24,7 +24,6 @@
   },
   "homepage": "https://github.com/sopheos/orbjs_fetch#readme",
   "devDependencies": {
-    "tsc": "^2.0.4",
     "typescript": "^5.9.3"
   }
 }
