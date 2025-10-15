@@ -6,6 +6,10 @@ import { HttpException } from "./HttpException.mjs";
  * @property {number} status
  * @property {any} body
  *
+ * @typedef Config
+ * @type {object}
+ * @property {handleErrors} [handleErrors]
+ * 
  * @typedef Options
  * @type {object}
  * @property {string} [baseUrl]
@@ -21,12 +25,15 @@ import { HttpException } from "./HttpException.mjs";
 
 export class Fetch {
   options = {};
+  config = {};
 
   /**
    * @param {Options} options
+   * @param {Config} config
    */
-  constructor(options = {}) {
+  constructor(options = {}, config = {}) {
     this.options = options;
+    this.config = config;
   }
 
   /**
@@ -90,7 +97,9 @@ export class Fetch {
             error: navigator?.onLine ? "fetch" : "offline",
           },
         });
-      });
+      })
+      .catch((e) => this.handleErrors(e, {url, options}));
+
   }
 
   /**
@@ -134,6 +143,18 @@ export class Fetch {
     }
     return response.text();
   }
+
+  /**
+   * @param {HttpException} e
+   * @param {{url: string, options: Options}} ctx
+   */
+  async handleErrors(e, ctx) {
+    if (this.config.handleErrors) {
+      await this.config.handleErrors(e, ctx);
+    }
+    throw e;
+  }
+
 
   // HELPERS ----------------------------------------------------------------------------------------
 

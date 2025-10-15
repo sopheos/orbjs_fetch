@@ -18,6 +18,7 @@ import { HttpException } from "./HttpException.mjs";
  *
  * @typedef Config
  * @type {object}
+ * @property {fetchToken} [generate]
  * @property {fetchToken} [renew]
  * @property {fetchToken} [refresh]
  * @property {handleErrors} [handleErrors]
@@ -41,8 +42,6 @@ export class FetchQueue extends Fetch {
   static ASYNC = 1;
   static SYNC = 2;
 
-  config = {};
-
   #queue = [];
   pending = FetchQueue.NONE;
 
@@ -56,21 +55,40 @@ export class FetchQueue extends Fetch {
     token: null,
     delay: 0,
     exp: 0,
-    forceRetry: false,
   };
 
-  /**
+  generateValid = false;
+
+    /**
    * @param {Options} options
    * @param {Config} config
    */
   constructor(options = {}, config = {}) {
-    super(options);
-    this.config = config;
+    super(options, config);
+    this.generateValid = !!this.config.generate;
   }
 
   // ------------------------------------------------------------------
   // Token
   // ------------------------------------------------------------------
+
+  generate() {
+    if (!this.config.generate) {
+      return new Promise((resolve) => resolve());
+    }
+
+    this.pending = FetchQueue.SYNC;
+
+    return this.config
+      .generate()
+      .catch(() => {
+        this.generateValid = false;
+      })
+      .finally(() => {
+        this.pending = FetchQueue.NONE;
+        this.runQueue();
+      });
+  }
 
   renew() {
     if (!this.config.renew) {
@@ -83,10 +101,13 @@ export class FetchQueue extends Fetch {
       .renew()
       .catch(() => {
         this.resetAccess();
-        if (this.refreshStore.exp > Date.now()) {
+        if (this.refreshValid(Date.now())) {
           return this.refresh();
         }
         this.resetRefresh();
+        if (this.generateValid) {
+          return this.generate();
+        }
       })
       .finally(() => {
         this.pending = FetchQueue.NONE;
@@ -104,13 +125,24 @@ export class FetchQueue extends Fetch {
     return this.config
       .refresh()
       .catch(() => {
-        this.resetAccess();
         this.resetRefresh();
+        if (this.generateValid) {
+          return this.generate();
+        }
       })
       .finally(() => {
         this.pending = FetchQueue.NONE;
         this.runQueue();
       });
+  }
+  
+  renewValid(timestamp) {
+    const createdAt = this.accessStore.exp - this.accessStore.delay;
+    return !!this.config.renew && createdAt < timestamp - 1000 * 60 * 15;
+  }
+  
+  refreshValid(timestamp) {
+    return !!this.config.refresh && this.refreshStore.exp > timestamp
   }
 
   resetAccess() {
@@ -123,7 +155,6 @@ export class FetchQueue extends Fetch {
     this.refreshStore.token = null;
     this.refreshStore.delay = 0;
     this.refreshStore.exp = 0;
-    this.refreshStore.forceRetry = false;
   }
 
   // ----------------------------------------------------------------------------------------------
@@ -158,32 +189,24 @@ export class FetchQueue extends Fetch {
       };
     }
 
-    return super.send(url, options).catch(async (e) => {
-      if (e.data.status === 401) {
-        this.resetAccess();
-        if (
-          this.refreshStore.exp > Date.now() ||
-          this.refreshStore.forceRetry
-        ) {
-          return this.send(url, options);
-        }
-      }
-
-      await this.handleErrors(e, {url, options});
-
-      throw e;
-    });
+    return super
+      .send(url, options)
+      .catch((e) => this.handleErrors(e, { url, options }));
   }
 
   /**
    * @param {HttpException} e
    * @param {{url: string, options: Options}} ctx
    */
-  async handleErrors(e, ctx) {
-    if (this.config.handleErrors) {
-      await this.config.handleErrors(e, ctx);
+  async handleErrors(e, {url, options}) {
+    if (e.status === 401) {
+      this.resetAccess();
+
+      if (this.refreshValid(Date.now()) || this.generateValid) {
+        return this.send(url, options);
+      }
     }
-    throw e;
+    await super.handleErrors(e, { url, options });
   }
 
   // ----------------------------------------------------------------------------------------------
@@ -203,27 +226,33 @@ export class FetchQueue extends Fetch {
     // access valid -------------------------------------------------------------------------------
     if (this.accessStore.exp > timestamp) {
       // access is older than 15 min => renew -----------------------------------------------------
-      const createdAt = this.accessStore.exp - this.accessStore.delay;
-      if (
-        createdAt < timestamp - 1000 * 60 * 15 &&
-        this.pending === FetchQueue.NONE
-      ) {
+      if (this.renewValid(timestamp) && this.pending === FetchQueue.NONE) {
         this.renew();
       }
       return false;
     }
 
+    this.resetAccess();
+
     // refresh valid ------------------------------------------------------------------------------
-    if (this.refreshStore.exp > timestamp || this.refreshStore.forceRetry) {
+    if (this.refreshValid(timestamp)) {
       if (this.pending === FetchQueue.NONE) {
-        this.refresh();
+          this.refresh();
       }
       this.pending = FetchQueue.SYNC;
       return true;
     }
 
-    this.resetAccess();
     this.resetRefresh();
+
+    // generate access by other means (ex: credentials) ------------------------------------------------------------------------------
+    if (this.generateValid) {
+      if (this.pending === FetchQueue.NONE) {
+          this.generate();
+      }
+      this.pending = FetchQueue.SYNC;
+      return true;
+    }
 
     this.runQueue();
     return false;
