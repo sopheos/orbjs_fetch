@@ -6,6 +6,7 @@ import { HttpException } from "./HttpException.mjs";
  * @callback handleErrors
  * @param {HttpException} error
  * @param {{url: string, options: Options}} ctx
+ * @returns {Promise<any>}
  *
  * @callback fetchToken
  * @returns {Promise<void>}
@@ -197,6 +198,7 @@ export class FetchQueue extends Fetch {
   /**
    * @param {HttpException} e
    * @param {{url: string, options: Options}} ctx
+   * @returns {Promise<any>}
    */
   async handleErrors(e, {url, options}) {
     if (e.status === 401) {

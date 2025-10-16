@@ -1,18 +1,16 @@
 {
   "name": "@sopheos/orbjs_fetch",
-  "version": "1.2.0",
+  "version": "1.2.4",
   "description": "A Fetch API helper",
-  "exports": "./dist/index.mjs",
+  "exports": "./index.mjs",
+  "types": "./index.d.mts",
   "type": "module",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "build": "(bash -c \"rm -r ./dist\" && npx tsc) || npx tsc"
+    "build": "(bash -c \"find . -type f -name '*.d.mts' -delete\" && npx tsc) || npx tsc"
   },
-  "files": [
-    "dist"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sopheos/orbjs_fetch.git"
@@ -25,5 +23,5 @@
   "homepage": "https://github.com/sopheos/orbjs_fetch#readme",
   "devDependencies": {
     "typescript": "^5.9.3"
-  }
+  }  
 }

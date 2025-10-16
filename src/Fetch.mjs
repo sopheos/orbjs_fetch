@@ -8,7 +8,7 @@ import { HttpException } from "./HttpException.mjs";
  *
  * @typedef Config
  * @type {object}
- * @property {handleErrors} [handleErrors]
+ * @property {import("./FetchQueue.mjs").handleErrors} [handleErrors]
  * 
  * @typedef Options
  * @type {object}
