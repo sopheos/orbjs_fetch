@@ -10,11 +10,11 @@ import { HttpException } from "./HttpException.mjs";
  * @param {HttpException} error
  * @param {{url: string, options: Options}} ctx
  * @returns {Promise<any>}
- * 
+ *
  * @typedef Config
  * @type {object}
  * @property {handleErrors} [handleErrors]
- * 
+ *
  * @typedef Options
  * @type {object}
  * @property {string} [baseUrl]
@@ -103,8 +103,7 @@ export class Fetch {
           },
         });
       })
-      .catch((e) => this.handleErrors(e, {url, options}));
-
+      .catch((e) => this.handleErrors(e, { url, options }));
   }
 
   /**
@@ -159,7 +158,6 @@ export class Fetch {
     }
     throw e;
   }
-
 
   // HELPERS ----------------------------------------------------------------------------------------
 

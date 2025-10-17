@@ -138,14 +138,14 @@ export class FetchQueue extends Fetch {
   generateValid() {
     return !!this.config.generate && this.config.connected;
   }
-  
+
   renewValid(timestamp) {
     const createdAt = this.accessStore.exp - this.accessStore.delay;
     return !!this.config.renew && createdAt < timestamp - 1000 * 60 * 15;
   }
-  
+
   refreshValid(timestamp) {
-    return !!this.config.refresh && this.refreshStore.exp > timestamp
+    return !!this.config.refresh && this.refreshStore.exp > timestamp;
   }
 
   resetAccess() {
@@ -192,9 +192,7 @@ export class FetchQueue extends Fetch {
       };
     }
 
-    return super
-      .send(url, options)
-      .catch((e) => this.handleErrors(e, { url, options }));
+    return super.send(url, options);
   }
 
   /**
@@ -202,7 +200,7 @@ export class FetchQueue extends Fetch {
    * @param {{url: string, options: Options}} ctx
    * @returns {Promise<any>}
    */
-  async handleErrors(e, {url, options}) {
+  async handleErrors(e, { url, options }) {
     if (e.status === 401) {
       this.resetAccess();
 
@@ -210,7 +208,10 @@ export class FetchQueue extends Fetch {
         return this.send(url, options);
       }
     }
-    await super.handleErrors(e, { url, options });
+    if (this.config.handleErrors) {
+      await this.config.handleErrors(e, ctx);
+    }
+    throw e;
   }
 
   // ----------------------------------------------------------------------------------------------
@@ -241,7 +242,7 @@ export class FetchQueue extends Fetch {
     // refresh valid ------------------------------------------------------------------------------
     if (this.refreshValid(timestamp)) {
       if (this.pending === FetchQueue.NONE) {
-          this.refresh();
+        this.refresh();
       }
       this.pending = FetchQueue.SYNC;
       return true;
@@ -252,7 +253,7 @@ export class FetchQueue extends Fetch {
     // generate access by other means (ex: credentials) ------------------------------------------------------------------------------
     if (this.generateValid()) {
       if (this.pending === FetchQueue.NONE) {
-          this.generate();
+        this.generate();
       }
       this.pending = FetchQueue.SYNC;
       return true;
