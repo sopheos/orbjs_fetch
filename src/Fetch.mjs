@@ -6,9 +6,14 @@ import { HttpException } from "./HttpException.mjs";
  * @property {number} status
  * @property {any} body
  *
+ * @callback handleErrors
+ * @param {HttpException} error
+ * @param {{url: string, options: Options}} ctx
+ * @returns {Promise<any>}
+ * 
  * @typedef Config
  * @type {object}
- * @property {import("./FetchQueue.mjs").handleErrors} [handleErrors]
+ * @property {handleErrors} [handleErrors]
  * 
  * @typedef Options
  * @type {object}

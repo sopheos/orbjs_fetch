@@ -16,6 +16,7 @@
  *
  * @typedef Config
  * @type {object}
+ * @property {boolean} [connected]
  * @property {fetchToken} [generate]
  * @property {fetchToken} [renew]
  * @property {fetchToken} [refresh]
@@ -39,9 +40,9 @@ export class FetchQueue extends Fetch {
     static ASYNC: number;
     static SYNC: number;
     /**
-   * @param {Options} options
-   * @param {Config} config
-   */
+     * @param {Options} options
+     * @param {Config} config
+     */
     constructor(options?: Options, config?: Config);
     pending: number;
     accessStore: {
@@ -54,10 +55,11 @@ export class FetchQueue extends Fetch {
         delay: number;
         exp: number;
     };
-    generateValid: boolean;
     generate(): any;
+    connected: boolean;
     renew(): any;
     refresh(): any;
+    generateValid(): any;
     renewValid(timestamp: any): boolean;
     refreshValid(timestamp: any): boolean;
     resetAccess(): void;
@@ -88,6 +90,7 @@ export type HttpResponse = {
     body: any;
 };
 export type Config = {
+    connected?: boolean;
     generate?: fetchToken;
     renew?: fetchToken;
     refresh?: fetchToken;

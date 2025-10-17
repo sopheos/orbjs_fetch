@@ -19,6 +19,7 @@ import { HttpException } from "./HttpException.mjs";
  *
  * @typedef Config
  * @type {object}
+ * @property {boolean} [connected]
  * @property {fetchToken} [generate]
  * @property {fetchToken} [renew]
  * @property {fetchToken} [refresh]
@@ -58,15 +59,12 @@ export class FetchQueue extends Fetch {
     exp: 0,
   };
 
-  generateValid = false;
-
-    /**
+  /**
    * @param {Options} options
    * @param {Config} config
    */
   constructor(options = {}, config = {}) {
     super(options, config);
-    this.generateValid = !!this.config.generate;
   }
 
   // ------------------------------------------------------------------
@@ -83,7 +81,7 @@ export class FetchQueue extends Fetch {
     return this.config
       .generate()
       .catch(() => {
-        this.generateValid = false;
+        this.connected = false;
       })
       .finally(() => {
         this.pending = FetchQueue.NONE;
@@ -106,7 +104,7 @@ export class FetchQueue extends Fetch {
           return this.refresh();
         }
         this.resetRefresh();
-        if (this.generateValid) {
+        if (this.generateValid()) {
           return this.generate();
         }
       })
@@ -127,7 +125,7 @@ export class FetchQueue extends Fetch {
       .refresh()
       .catch(() => {
         this.resetRefresh();
-        if (this.generateValid) {
+        if (this.generateValid()) {
           return this.generate();
         }
       })
@@ -135,6 +133,10 @@ export class FetchQueue extends Fetch {
         this.pending = FetchQueue.NONE;
         this.runQueue();
       });
+  }
+
+  generateValid() {
+    return !!this.config.generate && this.config.connected;
   }
   
   renewValid(timestamp) {
@@ -204,7 +206,7 @@ export class FetchQueue extends Fetch {
     if (e.status === 401) {
       this.resetAccess();
 
-      if (this.refreshValid(Date.now()) || this.generateValid) {
+      if (this.refreshValid(Date.now()) || this.generateValid()) {
         return this.send(url, options);
       }
     }
@@ -248,7 +250,7 @@ export class FetchQueue extends Fetch {
     this.resetRefresh();
 
     // generate access by other means (ex: credentials) ------------------------------------------------------------------------------
-    if (this.generateValid) {
+    if (this.generateValid()) {
       if (this.pending === FetchQueue.NONE) {
           this.generate();
       }
