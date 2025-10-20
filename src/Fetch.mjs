@@ -26,6 +26,7 @@ import { HttpException } from "./HttpException.mjs";
  * @property {?Object.<string, any>} [body]
  * @property {?Object.<string, any>} [form]
  * @property {?Object.<string, any>} [json]
+ * @property {?Object.<string, any>} [extra]
  */
 
 export class Fetch {

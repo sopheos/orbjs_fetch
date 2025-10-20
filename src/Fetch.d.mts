@@ -24,6 +24,7 @@
  * @property {?Object.<string, any>} [body]
  * @property {?Object.<string, any>} [form]
  * @property {?Object.<string, any>} [json]
+ * @property {?Object.<string, any>} [extra]
  */
 export class Fetch {
     /**
@@ -139,6 +140,9 @@ export type Options = {
         [x: string]: any;
     } | null;
     json?: {
+        [x: string]: any;
+    } | null;
+    extra?: {
         [x: string]: any;
     } | null;
 };
