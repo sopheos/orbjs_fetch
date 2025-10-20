@@ -200,7 +200,7 @@ export class FetchQueue extends Fetch {
    * @param {{url: string, options: Options}} ctx
    * @returns {Promise<any>}
    */
-  async handleErrors(e, { url, options }) {
+  async handleErrors(e, ctx) {
     if (e.status === 401) {
       this.resetAccess();
 

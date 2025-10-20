@@ -69,7 +69,7 @@ export class FetchQueue extends Fetch {
      * @param {{url: string, options: Options}} ctx
      * @returns {Promise<any>}
      */
-    handleErrors(e: HttpException, { url, options }: {
+    handleErrors(e: HttpException, ctx: {
         url: string;
         options: Options;
     }): Promise<any>;
