@@ -57,7 +57,6 @@ export class FetchQueue extends Fetch {
         exp: number;
     };
     generate(): any;
-    connected: boolean;
     renew(): any;
     refresh(): any;
     generateValid(): any;

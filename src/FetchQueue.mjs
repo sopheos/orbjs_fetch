@@ -82,7 +82,7 @@ export class FetchQueue extends Fetch {
     return this.config
       .generate()
       .catch(() => {
-        this.connected = false;
+        this.config.connected = false;
       })
       .finally(() => {
         this.pending = FetchQueue.NONE;
