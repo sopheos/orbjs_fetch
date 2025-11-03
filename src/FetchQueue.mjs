@@ -206,7 +206,7 @@ export class FetchQueue extends Fetch {
       this.resetAccess();
 
       if (this.refreshValid(Date.now()) || this.generateValid()) {
-        return this.send(url, options);
+        return this.send(ctx.url, ctx.options);
       }
     }
     if (this.config.handleErrors) {
