@@ -96,6 +96,30 @@ export class Fetch {
           throw e;
         }
 
+        if (e instanceof DOMException) {
+          switch (e.name) {
+            case "AbortError":
+              const error = config.signal.reason instanceof DOMException && config.signal.reason.name === "AbortError"
+                ? "AbortError"
+                : config.signal.reason
+              throw new HttpException({
+                status: 400,
+                data: {
+                  status: 400,
+                  error,
+                },
+              });
+            default:
+              throw new HttpException({
+                status: 400,
+                data: {
+                  status: 400,
+                  error: e.name,
+                },
+              });
+          }
+        }
+
         throw new HttpException({
           status: 500,
           data: {
