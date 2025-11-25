@@ -81,8 +81,9 @@ export class FetchQueue extends Fetch {
 
     return this.config
       .generate()
-      .catch(() => {
+      .catch((e) => {
         this.config.connected = false;
+        throw e;
       })
       .finally(() => {
         this.pending = FetchQueue.NONE;
@@ -99,7 +100,7 @@ export class FetchQueue extends Fetch {
 
     return this.config
       .renew()
-      .catch(() => {
+      .catch((e) => {
         this.resetAccess();
         if (this.refreshValid(Date.now())) {
           return this.refresh();
@@ -108,6 +109,7 @@ export class FetchQueue extends Fetch {
         if (this.generateValid()) {
           return this.generate();
         }
+        throw e;
       })
       .finally(() => {
         this.pending = FetchQueue.NONE;
@@ -124,11 +126,12 @@ export class FetchQueue extends Fetch {
 
     return this.config
       .refresh()
-      .catch(() => {
+      .catch((e) => {
         this.resetRefresh();
         if (this.generateValid()) {
           return this.generate();
         }
+        throw e;
       })
       .finally(() => {
         this.pending = FetchQueue.NONE;
