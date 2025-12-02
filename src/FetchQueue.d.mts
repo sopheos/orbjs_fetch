@@ -6,6 +6,7 @@
  * @returns {Promise<any>}
  *
  * @callback fetchToken
+ * @param {?Object.<string, any>} [extra]
  * @returns {Promise<void>}
  * @throws {HttpException}
  *
@@ -57,8 +58,8 @@ export class FetchQueue extends Fetch {
         exp: number;
     };
     generate(): any;
-    renew(): any;
-    refresh(): any;
+    renew(extra?: any): any;
+    refresh(extra?: any): any;
     generateValid(): any;
     renewValid(timestamp: any): boolean;
     refreshValid(timestamp: any): boolean;
@@ -84,7 +85,9 @@ export type handleErrors = (error: HttpException, ctx: {
     url: string;
     options: Options;
 }) => Promise<any>;
-export type fetchToken = () => Promise<void>;
+export type fetchToken = (extra?: {
+    [x: string]: any;
+} | null) => Promise<void>;
 export type HttpResponse = {
     status: number;
     body: any;

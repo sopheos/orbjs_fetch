@@ -9,6 +9,7 @@ import { HttpException } from "./HttpException.mjs";
  * @returns {Promise<any>}
  *
  * @callback fetchToken
+ * @param {?Object.<string, any>} [extra]
  * @returns {Promise<void>}
  * @throws {HttpException}
  *
@@ -91,7 +92,7 @@ export class FetchQueue extends Fetch {
       });
   }
 
-  renew() {
+  renew(extra = null) {
     if (!this.config.renew) {
       return new Promise((resolve) => resolve());
     }
@@ -99,7 +100,7 @@ export class FetchQueue extends Fetch {
     this.pending = FetchQueue.ASYNC;
 
     return this.config
-      .renew()
+      .renew(extra)
       .catch((e) => {
         this.resetAccess();
         if (this.refreshValid(Date.now())) {
@@ -117,7 +118,7 @@ export class FetchQueue extends Fetch {
       });
   }
 
-  refresh() {
+  refresh(extra = null) {
     if (!this.config.refresh) {
       return new Promise((resolve) => resolve());
     }
@@ -125,7 +126,7 @@ export class FetchQueue extends Fetch {
     this.pending = FetchQueue.SYNC;
 
     return this.config
-      .refresh()
+      .refresh(extra)
       .catch((e) => {
         this.resetRefresh();
         if (this.generateValid()) {
