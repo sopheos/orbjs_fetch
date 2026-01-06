@@ -62,7 +62,7 @@ export class Fetch {
         let data = config.query[key];
         if (Array.isArray(data)) {
           for (const [index, value] of data.entries()) {
-            input.searchParams.append(`${key}[${index}]`, value);
+            input.searchParams.append(`${key}[]`, value);
           }
         } else if (data !== null) {
           input.searchParams.append(key, data);
