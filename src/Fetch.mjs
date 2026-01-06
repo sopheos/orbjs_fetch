@@ -52,9 +52,9 @@ export class Fetch {
     const config = { ...this.options, ...options };
 
     // Build url ----------------------------------------------------------------------------------
-    const base = new URL(config.baseUrl);
+    const base = new URL(config.baseUrl ?? location.origin);
     const urlPrefix = base.pathname.length === 1 ? "" : base.pathname
-    const input = new URL(urlPrefix + url, config.baseUrl ?? location.origin);
+    const input = new URL(urlPrefix + url, base.origin);
 
     // add query ----------------------------------------------------------------------------------
     if (config.query) {

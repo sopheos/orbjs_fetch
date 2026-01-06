@@ -1,6 +1,6 @@
 {
   "name": "@sopheos/orbjs_fetch",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "description": "A Fetch API helper",
   "exports": "./index.mjs",
   "types": "./index.d.mts",
