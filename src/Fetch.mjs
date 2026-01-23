@@ -64,7 +64,7 @@ export class Fetch {
           for (const [index, value] of data.entries()) {
             input.searchParams.append(`${key}[]`, value);
           }
-        } else if (data !== null) {
+        } else if (data !== null && data !== undefined) {
           input.searchParams.append(key, data);
         }
       }
