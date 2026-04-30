@@ -104,7 +104,7 @@ export class FetchQueue extends Fetch {
       .catch((e) => {
         this.resetAccess();
         if (this.refreshValid(Date.now())) {
-          return this.refresh();
+          return this.refresh(extra);
         }
         this.resetRefresh();
         if (this.generateValid()) {

@@ -49,7 +49,14 @@ export class Fetch {
    * @throws {HttpException}
    */
   async send(url, options = {}) {
-    const config = { ...this.options, ...options };
+      const config = {
+      ...this.options,
+      ...options,
+      headers: {
+        ...this.options.headers ?? {},
+        ...options.headers ?? {},
+      }
+    };
 
     // Build url ----------------------------------------------------------------------------------
     const base = new URL(config.baseUrl ?? location.origin);
@@ -94,6 +101,7 @@ export class Fetch {
     return fetch(input, init)
       .then((res) => Fetch.handleResponse(res))
       .catch((e) => {
+
         if (e instanceof HttpException) {
           throw e;
         }
